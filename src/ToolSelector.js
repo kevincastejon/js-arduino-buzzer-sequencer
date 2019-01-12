@@ -7,9 +7,9 @@ class ToolSelector extends React.Component {
   render() {
     return (
       <div id="toolSelector">
-      <label>Link : <input type="radio" className="radioTool" id="link" name="tool" value="link" checked={this.props.tool==="link"} onChange={this.onToolChange}/></label>
-      <label>Unlink : <input type="radio" className="radioTool" id="unlink" name="tool" value="unlink" checked={this.props.tool==="unlink"} onChange={this.onToolChange}/></label>
-      <label>Erase : <input type="radio" className="radioTool" id="erase" name="tool" value="erase" checked={this.props.tool==="erase"} onChange={this.onToolChange}/></label>
+      <label title="Will play the next note without any interuption (on your Arduino)">Link : <input type="radio" className="radioTool" id="link" name="tool" value="link" checked={this.props.tool==="link"} onChange={this.onToolChange}/></label>
+      <label title="Will make a brief interuption before playing the next note">Unlink : <input type="radio" className="radioTool" id="unlink" name="tool" value="unlink" checked={this.props.tool==="unlink"} onChange={this.onToolChange}/></label>
+      <label title="Erase the note">Erase : <input type="radio" className="radioTool" id="erase" name="tool" value="erase" checked={this.props.tool==="erase"} onChange={this.onToolChange}/></label>
       </div>
     );
   }
