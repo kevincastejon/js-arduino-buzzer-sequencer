@@ -1,0 +1,46 @@
+body {
+  font: 14px "Century Gothic", Futura, sans-serif;
+  margin: 20px;
+}
+#mainCont{
+  width:500px;
+  height:400px;
+  resize:both;
+  overflow: scroll;
+  margin-top: 15px;
+  margin-bottom: 15px;
+}
+#pianoRoll{
+}
+.noteLabel{
+  width: 50px;
+}
+.note, .headerNote{
+  width:25px;
+  height: 25px;
+  border-right:1px solid black;
+  border-top:1px solid black;
+}
+.note.checked{
+  background-color: rgb(139, 126, 238);
+}
+.note.linked{
+  border-right-color: rgb(139, 126, 238);
+}
+
+.lineCont{
+  display: inline-flex;
+}
+.line{
+  display: flex;
+}
+.radioTool{
+  margin-right: 50px;
+}
+textarea{
+  width:500px;
+  height:200px;
+}
+#durationSelector, #bpm, #ToolSelector, #pinSelector{
+  margin-bottom: 15px;
+}
