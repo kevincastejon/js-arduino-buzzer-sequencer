@@ -27,7 +27,9 @@ body {
 .note.linked{
   border-right-color: rgb(139, 126, 238);
 }
-
+.noteLabel:hover{
+  background-color: rgb(177, 177, 177);
+}
 .lineCont{
   display: inline-flex;
 }

@@ -102,6 +102,7 @@ class Main extends React.Component {
     "}\n";
     return (
       <div id="realMainCont">
+      <h2>Arduino buzzer sequencer</h2>
       <BPM tempo={this.state.tempo} onTempoChange={this.onTempoChange}/>
       <PinSelector pin={this.state.pin} onPinChange={this.onPinChange}/>
       <DurationSelector duration={this.state.notes.length} onDurationChange={this.onDurationChange}/>
