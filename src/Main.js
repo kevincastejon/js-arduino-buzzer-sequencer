@@ -119,11 +119,9 @@ class Main extends React.Component {
     );
   }
   onTempoChange=(newTempo)=>{
-    console.log(newTempo);
     this.setState({tempo:newTempo});
   }
   onDurationChange=(newDuration)=>{
-    console.log(newDuration);
     let ar=[];
     for (let i = 0; i < newDuration; i++) {
       if(this.state.notes.length>i){
@@ -136,6 +134,9 @@ class Main extends React.Component {
   }
   onToolChange=(newTool)=>{
     this.setState({tool:newTool});
+  }
+  onPinChange=(newPin)=>{
+    this.setState({pin:newPin});
   }
   onJSONChange=(e)=>{
     let json=JSON.parse(e.target.value);
