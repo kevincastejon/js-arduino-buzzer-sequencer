@@ -56,6 +56,7 @@ class Main extends React.Component {
       <br/>
       <label>Arduino sketch (copy or paste to save or load) :</label>
       <NumericSelector number={this.state.pin} labelLeft="Arduino pin" onChange={this.onPinChange}/><ArduinoCodeHolder tempo={this.state.tempo} tool={this.state.tool} notes={this.state.notes} pin={this.state.pin} onCodeChange={this.onCodeChange}/>
+      <div id="footer">Developped by <a href="https://github.com/lePioo?tab=repositories">Kevin Castejon (LePioo)</a>. Powered by Reactjs and Tonejs.</div>
     </div>);
   }
   onUndo = (e) => {
