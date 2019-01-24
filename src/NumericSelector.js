@@ -19,21 +19,21 @@ class NumericSelector extends React.Component {
 
     return (
       <div id="numericSelector" className={this.props.className?this.props.className:""}>
-        <Button disabled={(this.props.number || 0)<=1} onClick={this.onRemove}> - </Button> <label>{this.props.labelLeft?this.props.labelLeft:""} <NumericInput {...rangeProps} value={(this.props.number || 0)} disableArrows onValid={this.onChange} /> {this.props.labelRight?this.props.labelRight:""}</label> <Button onClick={this.onAdd}> + </Button>
+        <Button disabled={(parseInt(this.props.number) || 0)<=1} onClick={this.onRemove}> - </Button> <label>{this.props.labelLeft?this.props.labelLeft:""} <NumericInput {...rangeProps} value={(parseInt(this.props.number) || 0)} disableArrows onValid={this.onChange} /> {this.props.labelRight?this.props.labelRight:""}</label> <Button onClick={this.onAdd}> + </Button>
       </div>
     );
   }
   onChange=(e)=>{
     if(this.props.onChange)
-    this.props.onChange(e.target.value);
+    this.props.onChange(parseInt(e.target.value));
   }
   onAdd=(e)=>{
     if(this.props.onChange)
-    this.props.onChange((this.props.number || 0)+1);
+    this.props.onChange((parseInt(this.props.number) || 0)+1);
   }
   onRemove=(e)=>{
     if(this.props.onChange)
-    this.props.onChange((this.props.number || 0)-1);
+    this.props.onChange((parseInt(this.props.number) || 0)-1);
   }
 }
 export default NumericSelector
