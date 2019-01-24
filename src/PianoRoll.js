@@ -18,6 +18,7 @@ class PianoRoll extends React.Component {
     this.measureHeadersRef = React.createRef();
     this.noteHeadersRef = React.createRef();
     this.matrixContRef = React.createRef();
+    this.headerNoteDownMode=false;
   }
   render() {
     return (
@@ -27,7 +28,7 @@ class PianoRoll extends React.Component {
         </div>
         <div id="botCont">
           <div id="noteHeadersCont">
-            <div id="noteHeaders" onWheel={(e) => { e.preventDefault(); }} ref={this.noteHeadersRef} onScroll={this.onMeasureHeadersScroll}>{NoteMap.notesNames.concat().map((elt,i) => {return(<div onMouseDown={this.onHeaderNoteDown} onMouseUp={this.onHeaderNoteUp} key={"note_"+i} id={"note_"+i} className="noteHeader">{elt}</div>)})}</div>
+            <div id="noteHeaders" onWheel={(e) => { e.preventDefault(); }} ref={this.noteHeadersRef} onScroll={this.onMeasureHeadersScroll}>{NoteMap.notesNames.concat().map((elt,i) => {return(<div onMouseDown={this.onHeaderNoteDown} onMouseUp={this.onHeaderNoteUp} onMouseEnter={this.onHeaderNoteEnter} onMouseLeave={this.onHeaderNoteLeave} key={"note_"+i} id={"note_"+i} style={{backgroundColor:elt.includes("S")?"black":"white",color:elt.includes("S")?"white":"black"}} className="noteHeader">{elt.replace("S","#")}</div>)})}</div>
           </div>
           <div id="matrixCont" ref={this.matrixContRef} onScroll={this.onMatrixScroll}>
             <MatrixSelector numCol={this.props.notes.length} leftHeaders={NoteMap.notesNames.concat()} topHeaders={Array.apply(null, Array(this.props.notes.length)).map((x, i) => { return i })} numLine={NoteMap.notesNames.length} onSelection={this.onTileSelection} idleStyle={this.getStyleMatrix()} disableSelectAcrossLine={this.props.tool!=="erase"} />
@@ -80,11 +81,23 @@ class PianoRoll extends React.Component {
   onHeaderNoteDown=(e)=>{
     this.oscillator.frequency.value=NoteMap.notesMap[e.target.id.split("_")[1]];
     this.oscillator.start();
+    this.headerNoteDownMode=true;
   }
   onHeaderNoteUp=(e)=>{
     console.log(e.target.id.split("_")[1]);
     this.oscillator.stop();
+    this.headerNoteDownMode=false;
   }
-
+  onHeaderNoteEnter=(e)=>{
+    if(this.headerNoteDownMode){
+      this.oscillator.frequency.value=NoteMap.notesMap[e.target.id.split("_")[1]];
+      this.oscillator.start();
+    }
+  }
+  onHeaderNoteLeave=(e)=>{
+    if(this.headerNoteDownMode){
+      this.oscillator.stop();
+    }
+  }
 }
 export default PianoRoll
