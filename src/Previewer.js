@@ -1,11 +1,16 @@
 import React from 'react';
 import NoteMap from './NoteMap';
-import SignalGenerator from './SignalGenerator';
+import * as Tone from 'tone';
 
 class Previewer extends React.Component {
   constructor(props) {
     super(props);
     this.timer=null;
+    this.oscillator = new Tone.Oscillator({
+      "type" : "sine",
+      "frequency" : 440,
+      "volume" : -16
+    }).toMaster();
   }
   render() {
     return (
@@ -18,8 +23,18 @@ class Previewer extends React.Component {
   onPreview=(e)=>{
     if(this.timer==null){
       let tem=0;
+      let lastNoteLink=true;
       this.timer=setInterval(() => {
-        SignalGenerator.playFrequency(NoteMap[this.props.notes[tem].note],60/this.props.tempo*1000/4);
+
+        if(!lastNoteLink){
+          this.oscillator.stop();
+        }
+        lastNoteLink=true;
+        if(this.props.notes[tem].note!=0){
+          this.oscillator.frequency.value=this.props.notes[tem].note;
+          this.oscillator.start();
+          lastNoteLink=this.props.notes[tem].linkedToNext;
+        }
         tem++;
         if(tem===this.props.notes.length)
         tem=0;
@@ -30,7 +45,7 @@ class Previewer extends React.Component {
     if(this.timer!=null){
     clearInterval(this.timer);
     this.timer=null;
-    SignalGenerator.stop();
+    this.oscillator.stop();
     }
   }
 }

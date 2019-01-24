@@ -1,47 +1,89 @@
 import React from 'react';
 import NoteMap from './NoteMap';
-import SignalGenerator from './SignalGenerator';
-class PianoRoll extends React.Component {
+import Note from './Note';
+import Cloner from './Cloner';
+import MatrixSelector from './MatrixSelector';
+import ResizeObserver from 'react-resize-observer';
+import './PianoRoll.css';
+import * as Tone from 'tone';
 
+class PianoRoll extends React.Component {
+  constructor(props){
+    super(props);
+    this.oscillator = new Tone.Oscillator({
+      "type" : "sine",
+      "frequency" : 440,
+      "volume" : -16
+    }).toMaster();
+    this.measureHeadersRef = React.createRef();
+    this.noteHeadersRef = React.createRef();
+    this.matrixContRef = React.createRef();
+  }
   render() {
-    let jsx=[];
-    for (let i = 0; i < NoteMap.notesMap.length+1; i++) {
-      let children=[];
-      for (let j = 0; j < this.props.notes.length; j++) {
-        if(i===0){
-          children.push(<div id={"header_"+j} key={"header_"+j} className="headerNote">{j}</div>);
-        } else {
-          let classes="note ";
-          if(NoteMap.notesNames[i-1]===this.props.notes[j].note){
-            classes+="checked ";
-            if(this.props.notes[j].linkedToNext)
-            classes+="linked";
-          }
-          children.push(<div id={NoteMap.notesNames[i-1]+"_"+j} key={NoteMap.notesNames[i-1]+"_"+j} className={classes} onClick={this.onNoteClick}></div>);
-        }
-      }
-      if(i===0){
-        jsx.push(<div key={"headerLineCont"} className="lineCont"><label key={"label_header"} className="noteLabel"></label><div id="header_line" key="header_line" className="line">{children}</div></div>);
-      } else {
-        jsx.push(<div key={"contcont_"+i}><div key={"lineCont_"+i} className="lineCont"><label id={NoteMap.notesNames[i-1]} onMouseDown={this.onHeaderNoteDown} onMouseUp={this.onHeaderNoteUp} key={"label_"+i} className="noteLabel">{NoteMap.notesNames[i-1]}</label><div id={NoteMap.notesNames[i-1]+"_line"} key={NoteMap.notesNames[i-1]+"_line"} className="line">{children}</div></div></div>);
-      }
-    }
     return (
       <div id="pianoRoll">
-        {jsx}
+        <div id="measureHeadersCont">
+          <div id="measureHeaders" onWheel={(e) => { e.preventDefault(); }} ref={this.measureHeadersRef} onScroll={this.onNoteHeadersScroll}>{this.props.notes.map((elt,i) => {return(<div key={"measure_"+i} className="measureHeader">{i}</div>)})}</div>
+        </div>
+        <div id="botCont">
+          <div id="noteHeadersCont">
+            <div id="noteHeaders" onWheel={(e) => { e.preventDefault(); }} ref={this.noteHeadersRef} onScroll={this.onMeasureHeadersScroll}>{NoteMap.notesNames.concat().map((elt,i) => {return(<div onMouseDown={this.onHeaderNoteDown} onMouseUp={this.onHeaderNoteUp} key={"note_"+i} id={"note_"+i} className="noteHeader">{elt}</div>)})}</div>
+          </div>
+          <div id="matrixCont" ref={this.matrixContRef} onScroll={this.onMatrixScroll}>
+            <MatrixSelector numCol={this.props.notes.length} leftHeaders={NoteMap.notesNames.concat()} topHeaders={Array.apply(null, Array(this.props.notes.length)).map((x, i) => { return i })} numLine={NoteMap.notesNames.length} onSelection={this.onTileSelection} idleStyle={this.getStyleMatrix()} disableSelectAcrossLine={this.props.tool!=="erase"} />
+            </div>
+        </div>
       </div>
     );
+  }
+  getStyleMatrix(){
+    let matrix=[];
+    for (let i = 0; i < NoteMap.notesNames.length; i++) {
+      let line=[];
+        for (let j = 0; j < this.props.notes.length; j++) {
+          if(this.props.notes[j].note===NoteMap.notesMap[i]){
+            if (this.props.notes[j].linkedToNext) {
+              line.push({backgroundColor:"rgb(88, 133, 222)",borderRight:0});
+            } else {
+              line.push({backgroundColor:"rgb(88, 133, 222)"});
+            }
+          } else {
+            line.push({backgroundColor:"rgb(255, 255, 255)"});
+          }
+        }
+      matrix.push(line);
+    }
+    return(matrix)
+  }
+  onMatrixScroll=(e)=>{
+    this.noteHeadersRef.current.scrollTo(0,e.target.scrollTop);
+    this.measureHeadersRef.current.scrollTo(e.target.scrollLeft,0);
+  }
+  onTileSelection=(selectedTiles, matrix)=>{
+    let newNotes=Cloner.clone(this.props.notes);
+    if(this.props.tool==="erase"){
+      selectedTiles.forEach((elt,i) => {
+        if(newNotes[elt.col].note===NoteMap.notesMap[elt.line]){
+          newNotes[elt.col]=new Note();
+        }
+      });
+    } else {
+      selectedTiles.forEach((elt,i) => {
+        newNotes[elt.col]=new Note(NoteMap.notesMap[elt.line], this.props.tool==="link");
+      });
+    }
+    this.props.onNoteChange(newNotes);
   }
   onNoteClick=(e)=>{
     this.props.onNoteChange(e.target.id);
   }
   onHeaderNoteDown=(e)=>{
-    console.log(e.target.id);
-    SignalGenerator.playFrequency(NoteMap[e.target.id],5000);
+    this.oscillator.frequency.value=NoteMap.notesMap[e.target.id.split("_")[1]];
+    this.oscillator.start();
   }
   onHeaderNoteUp=(e)=>{
-    console.log(e.target.id);
-    SignalGenerator.stop();
+    console.log(e.target.id.split("_")[1]);
+    this.oscillator.stop();
   }
 
 }

@@ -1,0 +1,8 @@
+#numericSelector input{
+width: 32px;
+/* border-color: black; */
+}
+#numericSelector{
+  margin-left: 25px;
+  margin-right: 25px;
+}

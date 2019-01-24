@@ -1,0 +1,16 @@
+#matrixSelector .line{
+  white-space:nowrap;
+  /* border:1px solid black; */
+}
+#matrixSelector .tile{
+  border-top:1px solid black;
+  border-right:1px solid black;
+  display:inline-block;
+  vertical-align: bottom;
+}
+.tile, .tile::after, .tile::before {
+	-webkit-user-select: none;
+	-webkit-user-drag: none;
+	-webkit-app-region: no-drag;
+	cursor: default;
+}

@@ -1,42 +1,5 @@
 class NoteMap {
   constructor() {
-    this.B0 = 31;
-    this.C1  = 33;
-    this.CS1 = 35;
-    this.D1  = 37;
-    this.DS1 = 39;
-    this.E1  = 41;
-    this.F1  = 44;
-    this.FS1 = 46;
-    this.G1  = 49;
-    this.GS1 = 52;
-    this.A1  = 55;
-    this.AS1 = 58;
-    this.B1  = 62;
-    this.C2  = 65;
-    this.CS2 = 69;
-    this.D2  = 73;
-    this.DS2 = 78;
-    this.E2  = 82;
-    this.F2  = 87;
-    this.FS2 = 93;
-    this.G2  = 98;
-    this.GS2 = 104;
-    this.A2  = 110;
-    this.AS2 = 117;
-    this.B2  = 123;
-    this.C3  = 131;
-    this.CS3 = 139;
-    this.D3  = 147;
-    this.DS3 = 156;
-    this.E3  = 165;
-    this.F3  = 175;
-    this.FS3 = 185;
-    this.G3  = 196;
-    this.GS3 = 208;
-    this.A3  = 220;
-    this.AS3 = 233;
-    this.B3  = 247;
     this.C4  = 262;
     this.CS4 = 277;
     this.D4  = 294;
@@ -91,43 +54,6 @@ class NoteMap {
     this.DS8 = 4978;
 
     this.notesMap=[
-    this.B0,
-    this.C1,
-    this.CS1,
-    this.D1,
-    this.DS1,
-    this.E1,
-    this.F1,
-    this.FS1,
-    this.G1,
-    this.GS1,
-    this.A1,
-    this.AS1,
-    this.B1,
-    this.C2,
-    this.CS2,
-    this.D2,
-    this.DS2,
-    this.E2,
-    this.F2,
-    this.FS2,
-    this.G2,
-    this.GS2,
-    this.A2,
-    this.AS2,
-    this.B2,
-    this.C3,
-    this.CS3,
-    this.D3,
-    this.DS3,
-    this.E3,
-    this.F3,
-    this.FS3,
-    this.G3,
-    this.GS3,
-    this.A3,
-    this.AS3,
-    this.B3,
     this.C4,
     this.CS4,
     this.D4,
@@ -182,43 +108,6 @@ class NoteMap {
     this.DS8
     ];
     this.notesNames=[
-    "B0",
-    "C1",
-    "CS1",
-    "D1",
-    "DS1",
-    "E1",
-    "F1",
-    "FS1",
-    "G1",
-    "GS1",
-    "A1",
-    "AS1",
-    "B1",
-    "C2",
-    "CS2",
-    "D2",
-    "DS2",
-    "E2",
-    "F2",
-    "FS2",
-    "G2",
-    "GS2",
-    "A2",
-    "AS2",
-    "B2",
-    "C3",
-    "CS3",
-    "D3",
-    "DS3",
-    "E3",
-    "F3",
-    "FS3",
-    "G3",
-    "GS3",
-    "A3",
-    "AS3",
-    "B3",
     "C4",
     "CS4",
     "D4",

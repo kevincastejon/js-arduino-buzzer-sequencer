@@ -1,160 +1,175 @@
+// TODO
+// -systeme de lecture
+
 import React from 'react';
-import BPM from './BPM';
-import DurationSelector from './DurationSelector';
+import NumericSelector from './NumericSelector';
 import PianoRoll from './PianoRoll';
 import Note from './Note';
 import ToolSelector from './ToolSelector';
-import NoteMap from './NoteMap';
+import Button from 'react-bootstrap/lib/Button';
 import Previewer from './Previewer';
-import PinSelector from './PinSelector';
+import ArduinoCodeHolder from './ArduinoCodeHolder';
+import NoteMap from './NoteMap';
+import Cloner from './Cloner';
 
 class Main extends React.Component {
   constructor(props) {
     super(props);
+
+    this.savables = ["notes", "pin", "tempo"];
     this.state = {
-      tempo:props.tempo,
-      tool:props.tool,
-      notes:props.notes,
-      pin:props.pin
+      tempo: props.tempo,
+      tool: "link",
+      notes: props.notes,
+      pin: props.pin,
+      history: [
+        {
+          tempo: props.tempo,
+          notes: props.notes,
+          pin: props.pin
+        }
+      ],
+      currentHistory: 0
     };
   }
   render() {
-    let arduinoCode=
-    "#define NOTE_F4  349\n"+
-    "#define NOTE_FS4 370\n"+
-    "#define NOTE_G4  392\n"+
-    "#define NOTE_GS4 415\n"+
-    "#define NOTE_A4  440\n"+
-    "#define NOTE_AS4 466\n"+
-    "#define NOTE_B4  494\n"+
-    "#define NOTE_C5  523\n"+
-    "#define NOTE_CS5 554\n"+
-    "#define NOTE_D5  587\n"+
-    "#define NOTE_DS5 622\n"+
-    "#define NOTE_E5  659\n"+
-    "#define NOTE_F5  698\n"+
-    "#define NOTE_FS5 740\n"+
-    "#define NOTE_G5  784\n"+
-    "#define NOTE_GS5 831\n"+
-    "#define NOTE_A5  880\n"+
-    "#define NOTE_AS5 932\n"+
-    "#define NOTE_B5  988\n"+
-    "#define NOTE_C6  1047\n"+
-    "#define NOTE_CS6 1109\n"+
-    "#define NOTE_D6  1175\n"+
-    "#define NOTE_DS6 1245\n"+
-    "#define NOTE_E6  1319\n"+
-    "#define NOTE_F6  1397\n"+
-    "#define NOTE_FS6 1480\n"+
-    "#define NOTE_G6  1568\n"+
-    "#define NOTE_GS6 1661\n"+
-    "#define NOTE_A6  1760\n"+
-    "#define NOTE_AS6 1865\n"+
-    "#define NOTE_B6  1976\n"+
-    "#define NOTE_C7  2093\n"+
-    "#define NOTE_CS7 2217\n"+
-    "#define NOTE_D7  2349\n"+
-    "#define NOTE_DS7 2489\n"+
-    "#define NOTE_E7  2637\n"+
-    "#define NOTE_F7  2794\n"+
-    "#define NOTE_FS7 2960\n"+
-    "#define NOTE_G7  3136\n"+
-    "#define NOTE_GS7 3322\n"+
-    "#define NOTE_A7  3520\n"+
-    "#define NOTE_AS7 3729\n"+
-    "#define NOTE_B7  3951\n"+
-    "#define NOTE_C8  4186\n"+
-    "#define NOTE_CS8 4435\n"+
-    "#define NOTE_D8  4699\n"+
-    "#define NOTE_DS8 4978\n"+
-    "#define buzzerPin 2\n"+
-    "int tempo = "+this.state.tempo+";\n";
-    let melod="int melody[] = {";
-    let links="int noteLinks[] = {";
-    for (let i = 0; i < this.state.notes.length; i++) {
-      if(this.state.notes[i].note==="0")
-        melod+="0,";
-      else
-        melod+=NoteMap[this.state.notes[i].note]+",";
-      links+=this.state.notes[i].linkedToNext+",";
-    }
-    melod=melod.substring(0,melod.length-1)+"};\n";
-    links=links.substring(0,links.length-1)+"};\n";
-    arduinoCode+=melod;
-    arduinoCode+=links;
-    arduinoCode=arduinoCode+
-    "void setup() {\n"+
-    "pinMode(buzzerPin, OUTPUT);\n"+
-    "}\n"+
-    "void loop() {\n"+
-    "int size = sizeof(melody) / sizeof(int);"+
-    "for (int thisNote = 0; thisNote < size; thisNote++) {\n"+
-    "if(melody[thisNote]>0){\n"+
-    "tone(buzzerPin, melody[thisNote]);\n"+
-    "} else {\n"+
-    "noTone(buzzerPin);\n"+
-    "}\n"+
-    "delay(60.0/tempo*1000/4);\n"+
-    "if(noteLinks[thisNote]==0){\n"+
-    "noTone(buzzerPin);\n"+
-    "}\n"+
-    "}\n"+
-    "}\n";
-    return (
-      <div id="realMainCont">
-      <h2>Arduino buzzer melody composer</h2>
-      <BPM tempo={this.state.tempo} onTempoChange={this.onTempoChange}/>
-      <PinSelector pin={this.state.pin} onPinChange={this.onPinChange}/>
-      <DurationSelector duration={this.state.notes.length} onDurationChange={this.onDurationChange}/>
+    return (<div id="realMainCont">
+      <h2>Arduino buzzer melody sequencer</h2>
+      <br/>
+      <Button disabled={this.state.currentHistory === 0} type="button" onClick={this.onUndo}>Undo</Button>
+      <Button disabled={this.state.currentHistory === this.state.history.length - 1} type="button" onClick={this.onRedo}>Redo</Button>
+      <br/><br/>
+
       <ToolSelector onToolChange={this.onToolChange} tool={this.state.tool}/>
+      <br/>
+      <Button disabled={!this.isPitchDownAllowed()} id="pitchDown" onClick={this.onPitchChange}> - </Button>
+      <label> pitch </label>
+      <Button disabled={!this.isPitchUpAllowed()} id="pitchUp" onClick={this.onPitchChange}> + </Button>
+      <NumericSelector className="pianoNumSel" number={this.state.notes.length} labelRight="beats" onChange={this.onDurationChange}/>
       <div id="mainCont">
-      <PianoRoll notes={this.state.notes} duration={this.state.notes.length} onNoteChange={this.onNoteChange} />
+        <PianoRoll notes={this.state.notes} duration={this.state.notes.length} tool={this.state.tool} onNoteChange={this.onNoteChange}/>
       </div>
-      <Previewer notes={this.state.notes} tempo={this.state.tempo}/>
-      <label>Arduino code : (copy this sketch on your Arduino)</label><br/>
-      <textarea value={arduinoCode}></textarea><br/>
-      <label>JSON code : (copy or paste into this area for saving or loading)</label><br/>
-      <textarea onChange={this.onJSONChange} value={JSON.stringify({notes:this.state.notes,tempo:this.state.tempo,tool:this.state.tool,pin:this.state.pin})}></textarea>
-      </div>
-    );
+      <NumericSelector className="pianoNumSel" number={this.state.tempo} labelRight="BPM" onChange={this.onTempoChange}/>
+      <Previewer className="pianoNumSel" notes={this.state.notes} tempo={this.state.tempo}/>
+      <br/>
+
+      <br/>
+      <label>Arduino sketch (copy or paste to save or load) :</label>
+      <NumericSelector number={this.state.pin} labelLeft="Arduino pin" onChange={this.onPinChange}/><ArduinoCodeHolder tempo={this.state.tempo} tool={this.state.tool} notes={this.state.notes} pin={this.state.pin} onCodeChange={this.onCodeChange}/>
+    </div>);
   }
-  onTempoChange=(newTempo)=>{
-    this.setState({tempo:newTempo});
+  onUndo = (e) => {
+    this.setState((prev) => {
+      let prevState = Cloner.clone(prev.history[prev.currentHistory - 1]);
+      prevState.currentHistory = prev.currentHistory - 1;
+      return (prevState);
+    });
   }
-  onDurationChange=(newDuration)=>{
-    let ar=[];
-    for (let i = 0; i < newDuration; i++) {
-      if(this.state.notes.length>i){
-        ar[i]=this.state.notes[i];
-      } else {
-        ar[i]=new Note();
+  onRedo = (e) => {
+    this.setState((prev) => {
+      let nextState = Cloner.clone( prev.history[prev.currentHistory + 1]);
+      nextState.currentHistory = prev.currentHistory + 1;
+      return (nextState);
+    });
+  }
+  isPitchDownAllowed(){
+    let notEmpty=false;
+    let notAtEdge=true;
+    this.state.notes.forEach((elt,i) => {
+      if(elt.note!=0){
+        notEmpty=true;
+      }
+      if(elt.note==NoteMap.notesMap[0]){
+        notAtEdge=false;
+      }
+    })
+
+    return (notEmpty && notAtEdge);
+  }
+  isPitchUpAllowed(){
+    let notEmpty=false;
+    let notAtEdge=true;
+    this.state.notes.forEach((elt,i) => {
+      if(elt.note!=0){
+        notEmpty=true;
+      }
+      if(elt.note==NoteMap.notesMap[NoteMap.notesMap.length-1]){
+        notAtEdge=false;
+      }
+    })
+
+    return (notEmpty && notAtEdge);
+  }
+  setAndSaveState(state) {
+    let isSavable = false;
+    let same = false;
+    let ks = Object.keys(state);
+    for (let i = 0; i < ks.length; i++) {
+      if (this.savables.includes(ks[i])) {
+        isSavable = true;
+        if (ks[i] === "notes") {
+          if (state.notes.length === this.state.notes.length) {
+            same = state.notes.every((elt, index, array) => {
+              return (elt.note === this.state.notes[index].note && elt.linkedToNext === this.state.notes[index].linkedToNext);
+            });
+          }
+        } else {
+          same = (state[ks[i]] === this.state[ks[i]]);
+        }
       }
     }
-    this.setState({notes:ar});
-  }
-  onToolChange=(newTool)=>{
-    this.setState({tool:newTool});
-  }
-  onPinChange=(newPin)=>{
-    this.setState({pin:newPin});
-  }
-  onJSONChange=(e)=>{
-    let json=JSON.parse(e.target.value);
-    this.setState({tempo:json.tempo,notes:json.notes,pin:json.pin,tool:json.tool});
-  }
-  onNoteChange=(noteID)=>{
-    let noteAr=noteID.split("_");
-    let noteName=noteAr[0];
-    let notePosition=noteAr[1];
-    let ar=this.state.notes.concat();
-    if(this.state.tool==="link"){
-      ar[notePosition]=new Note(noteName,1);
-    } else if(this.state.tool==="unlink"){
-      ar[notePosition]=new Note(noteName,0);
-    } else if(this.state.tool==="erase"){
-      ar[notePosition]=new Note();
+    if (!same && isSavable) {
+      let newHisto = this.state.history.concat();
+      let savedStates=Cloner.clone( state);
+      for(let i=0;i<this.savables.length;i++){
+        if(!savedStates.hasOwnProperty(this.savables[i])){
+          savedStates[this.savables[i]]=Cloner.clone(this.state[this.savables[i]]);
+        }
+      }
+      newHisto.splice(this.state.currentHistory + 1);
+      newHisto.push(savedStates);
+      state.history = newHisto;
+      state.currentHistory = this.state.currentHistory + 1;
     }
-    this.setState({notes:ar});
+    this.setState(state);
+  }
+  onPitchChange = (e) => {
+    let newNotes=Cloner.clone(this.state.notes);
+    let op=e.target.id==="pitchDown"?-1:1;
+    newNotes=newNotes.map((elt,i) => {
+      let note=0;
+      if(elt.note>0){
+        note=NoteMap.notesMap[NoteMap.notesMap.indexOf(elt.note)+op];
+      }
+      return(new Note(note,elt.linkedToNext))
+    });
+    this.setAndSaveState({notes: newNotes});
+  }
+  onTempoChange = (newTempo) => {
+    this.setAndSaveState({tempo: newTempo});
+  }
+  onCodeChange = (newState) => {
+    this.setAndSaveState({tempo: newState.tempo, notes: newState.notes, pin: newState.pin, tool: newState.tool});
+  }
+  onDurationChange = (newDuration) => {
+    let ar = [];
+    for (let i = 0; i < newDuration; i++) {
+      if (this.state.notes.length > i) {
+        ar[i] = this.state.notes[i];
+      } else {
+        ar[i] = new Note();
+      }
+    }
+    this.setAndSaveState({notes: ar});
+  }
+  onToolChange = (newTool) => {
+    this.setState({tool: newTool});
+  }
+  onPinChange = (newPin) => {
+    this.setAndSaveState({pin: newPin});
+  }
+  onNoteChange = (newNotes) => {
+    this.setAndSaveState({notes: newNotes});
   }
 }
 export default Main
