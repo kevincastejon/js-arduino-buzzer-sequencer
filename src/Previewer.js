@@ -26,7 +26,7 @@ class Previewer extends React.Component {
       let lastNoteLink=true;
       this.timer=setInterval(() => {
 
-        if(!lastNoteLink){
+        if(!lastNoteLink || this.props.notes[tem].note==0){
           this.oscillator.stop();
         }
         lastNoteLink=true;

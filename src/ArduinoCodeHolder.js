@@ -14,7 +14,7 @@ class ArduinoCodeHolder extends React.Component {
       if(this.props.notes[i].note==="0")
         melod+="0,";
       else
-        melod+=NoteMap[this.props.notes[i].note]+",";
+        melod+=this.props.notes[i].note+",";
       links+=this.props.notes[i].linkedToNext+",";
     }
     melod=melod.substring(0,melod.length-1)+"};\n";
