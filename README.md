@@ -1,2 +1,2 @@
 # ArduinoBuzzerSequencer
-[Demo](https://arduinobuzzersequencer.herokuapp.com/)
+[Demo](https://arduino-buzzer-sequencer.herokuapp.com/)
