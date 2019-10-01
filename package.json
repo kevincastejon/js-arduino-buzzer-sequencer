@@ -1,7 +1,8 @@
 {
-  "name": "reactjstest",
+  "name": "arduino-buzzer-sequencer",
   "version": "0.1.0",
   "private": true,
+  "homepage": "http://kevincastejon.fr/demos/arduino-buzzer-sequencer/",
   "dependencies": {
     "react": "^16.7.0",
     "react-bootstrap": "^0.32.4",
